@@ -76,6 +76,14 @@
             >
               +10
             </button>
+            <button
+              type="button"
+              class="ml-1 rounded-md bg-rose-100 px-3 py-1 text-xs font-bold text-rose-700 disabled:opacity-30"
+              [disabled]="p.cantidad === 0"
+              (click)="venderTodo(p.nombre)"
+            >
+              Vender todo
+            </button>
           </td>
         </tr>
       } @empty {
@@ -91,7 +99,7 @@
 </div>
 
 <!-- LOS VALORES DERIVADOS · también se leen con paréntesis -->
-<div class="mt-4 grid gap-3 sm:grid-cols-2">
+<div class="mt-4 grid gap-3 sm:grid-cols-3">
   <div class="rounded-xl bg-slate-900 px-5 py-4 text-white">
     <div class="text-xs uppercase tracking-widest text-amber-400">Total en dinero</div>
     <div class="mt-1 text-3xl font-bold">{{ total() }}</div>
@@ -100,7 +108,27 @@
     <div class="text-xs uppercase tracking-widest text-slate-500">Unidades en el puesto</div>
     <div class="mt-1 text-3xl font-bold text-slate-900">{{ unidades() }}</div>
   </div>
+  <div class="rounded-xl bg-slate-100 px-5 py-4">
+    <div class="text-xs uppercase tracking-widest text-slate-500">Productos agotados</div>
+    <div class="mt-1 text-3xl font-bold text-slate-900">{{ agotados() }}</div>
+  </div>
 </div>
+
+<!-- RETO 2 · el aviso aparece solo cuando hay inventario bajo -->
+@if (inventarioBajo()) {
+  <div class="mt-3 rounded-lg border-l-4 border-amber-400 bg-amber-50 px-5 py-3">
+    <p class="text-sm font-semibold text-amber-900">Hay productos por agotarse</p>
+  </div>
+}
+
+<!-- RETO 3 · el producto más caro. @if por si la lista queda vacía -->
+@if (masCaro()) {
+  <div class="mt-3 rounded-lg border-l-4 border-slate-400 bg-slate-50 px-5 py-3">
+    <p class="text-sm font-semibold text-slate-700">
+      Producto más caro: {{ masCaro() }}
+    </p>
+  </div>
+}
 
 <!--
   @if · esto es tema de la S03, pero es el requisito 5 del Taller 01

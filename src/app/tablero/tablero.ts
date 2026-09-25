@@ -44,16 +44,43 @@ export class Tablero {
     this.productos().reduce((suma, p) => suma + p.precio * p.cantidad, 0),
   );
 
-  // Ojo: aquí se suma la CANTIDAD, no el precio por la cantidad.
+
   unidades = computed(() =>
     this.productos().reduce((suma, p) => suma + p.cantidad, 0),
   );
 
+  // RETO 1
+  agotados = computed(
+    () => this.productos().filter((p) => p.cantidad === 0).length,
+  );
+
+  // RETO 2
+  inventarioBajo = computed(() =>
+    this.productos().some((p) => p.cantidad > 0 && p.cantidad < 3),
+  );
+
+  // RETO 3 el nombre del producto más caro
+  masCaro = computed(() => {
+    const lista = this.productos();
+    if (lista.length === 0) return null;
+    return lista.reduce((mayor, p) => (p.precio > mayor.precio ? p : mayor))
+      .nombre;
+  });
+
+  // RETO 5
+  ordenados = computed(() =>
+    [...this.productos()].sort(
+      (a, b) => b.precio * b.cantidad - a.precio * a.cantidad,
+    ),
+  );
+
   // Un computed puede depender de dos signals a la vez.
+  // El buscador sigue funcionando: ya no filtra la lista original sino la
+  // ordenada, así la tabla conserva el orden del RETO 5 mientras se filtra.
   visibles = computed(() => {
     const texto = this.filtro().toLowerCase().trim();
-    if (texto === '') return this.productos();
-    return this.productos().filter((p) => p.nombre.toLowerCase().includes(texto));
+    if (texto === '') return this.ordenados();
+    return this.ordenados().filter((p) => p.nombre.toLowerCase().includes(texto));
   });
 
   // ===========================================================================
@@ -81,6 +108,13 @@ export class Tablero {
   reabastecer(nombre: string) {
     this.productos.update((lista) =>
       lista.map((p) => (p.nombre === nombre ? { ...p, cantidad: p.cantidad + 10 } : p)),
+    );
+  }
+
+  // RETO 4
+  venderTodo(nombre: string) {
+    this.productos.update((lista) =>
+      lista.map((p) => (p.nombre === nombre ? { ...p, cantidad: 0 } : p)),
     );
   }
 

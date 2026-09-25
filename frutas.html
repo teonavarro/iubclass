@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Puesto de frutas</title>
+<style>
+  body {
+    font-family: Calibri, 'Segoe UI', Arial, sans-serif;
+    margin: 0;
+    background: #f4f4f5;
+    color: #1f2937;
+    line-height: 1.6;
+  }
+  main { max-width: 720px; margin: 30px auto; background: #fff; padding: 26px 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,.08); }
+  table { width: 100%; border-collapse: collapse; }
+  th, td { border-bottom: 1px solid #e5e7eb; padding: 10px 12px; text-align: left; }
+  thead th { background: #1f2937; color: #fff; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; }
+  tbody tr:nth-child(even) { background: #fafafa; }
+  td.num { text-align: right; }
+  .totales { display: flex; gap: 14px; margin-top: 18px; }
+  .totales div { flex: 1; background: #f3f4f6; border-radius: 8px; padding: 12px 16px; }
+  .totales span { display: block; font-size: 22px; font-weight: bold; }
+  .totales small { text-transform: uppercase; letter-spacing: .5px; font-size: 10px; color: #6b7280; }
+  button { background: #2563eb; color: #fff; border: none; border-radius: 6px; padding: 6px 12px; font-weight: 600; cursor: pointer; }
+  button:hover { background: #1d4ed8; }
+  button:disabled { background: #d1d5db; cursor: not-allowed; }
+  #mensaje { background: #d1fae5; border-left: 4px solid #10b981; color: #065f46; padding: 10px 14px; border-radius: 0 6px 6px 0; font-weight: 600; }
+  #mensaje[hidden] { display: none; }
+</style>
+</head>
+<body>
+<main>
+
+<table>
+  <thead>
+    <tr>
+      <th>Fruta</th>
+      <th>Precio</th>
+      <th>Cantidad</th>
+      <th>Subtotal</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody id="cuerpo"></tbody>
+</table>
+
+<p>Total en dinero: <span id="totalDinero">0</span></p>
+<p>Total de unidades en el puesto: <span id="totalUnidades">0</span></p>
+<p id="mensaje" hidden>Jornada de venta mayorista</p>
+
+</main>
+
+<script>
+  'use strict';
+
+  var frutas = [
+    { nombre: 'Mango', precio: 1800, cantidad: 12 },
+    { nombre: 'Guayaba', precio: 1200, cantidad: 8 },
+    { nombre: 'Patilla', precio: 6500, cantidad: 2 },
+    { nombre: 'Maracuyá', precio: 3400, cantidad: 5 },
+    { nombre: 'Níspero', precio: 2900, cantidad: 4 },
+  ];
+
+  var cuerpo = document.getElementById('cuerpo');
+  var totalDinero = document.getElementById('totalDinero');
+  var totalUnidades = document.getElementById('totalUnidades');
+  var mensaje = document.getElementById('mensaje');
+
+  function vender(nombre) {
+    for (var i = 0; i < frutas.length; i++) {
+      if (frutas[i].nombre === nombre && frutas[i].cantidad > 0) {
+        frutas[i].cantidad--;
+      }
+    }
+    renderizar();
+  }
+
+  function renderizar() {
+    var sumaDinero = 0;
+    var sumaUnidades = 0;
+    cuerpo.innerHTML = '';
+
+    for (var i = 0; i < frutas.length; i++) {
+      var f = frutas[i];
+      var subtotal = f.precio * f.cantidad;
+      sumaDinero += subtotal;
+      sumaUnidades += f.cantidad;
+
+      var fila = document.createElement('tr');
+
+      var c1 = document.createElement('td');
+      c1.textContent = f.nombre;
+      var c2 = document.createElement('td');
+      c2.className = 'num';
+      c2.textContent = f.precio;
+      var c3 = document.createElement('td');
+      c3.className = 'num';
+      c3.textContent = f.cantidad;
+      var c4 = document.createElement('td');
+      c4.className = 'num';
+      c4.textContent = subtotal;
+
+      var c5 = document.createElement('td');
+      var boton = document.createElement('button');
+      boton.type = 'button';
+      boton.textContent = 'Vender 1';
+      boton.disabled = f.cantidad === 0;
+      boton.addEventListener('click', (function (nombre) {
+        return function () { vender(nombre); };
+      })(f.nombre));
+      c5.appendChild(boton);
+
+      fila.appendChild(c1);
+      fila.appendChild(c2);
+      fila.appendChild(c3);
+      fila.appendChild(c4);
+      fila.appendChild(c5);
+      cuerpo.appendChild(fila);
+    }
+
+    totalDinero.textContent = sumaDinero;
+    totalUnidades.textContent = sumaUnidades;
+    mensaje.hidden = sumaDinero <= 50000;
+  }
+
+  renderizar();
+</script>
+</body>
+</html>
